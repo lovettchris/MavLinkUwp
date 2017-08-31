@@ -6,6 +6,7 @@
 #pragma once
 
 #include "MainPage.g.h"
+#include "MavLinkVehicle.hpp"
 
 namespace IotCoreApp
 {
@@ -18,6 +19,7 @@ namespace IotCoreApp
 		MainPage();
     protected:
         virtual void OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs^ e) override;
-
+    private:
+        std::shared_ptr<mavlinkcom::MavLinkVehicle> _vehicle;
 	};
 }

@@ -15,7 +15,7 @@ namespace MavLinkUwp
         mavlink_utils::Semaphore dataReceived;
 
     public:
-        void connect(Platform::String^ deviceId);
+        bool connect(Platform::String^ deviceId);
         void connect(Windows::Storage::Streams::DataWriter^ w, Windows::Storage::Streams::DataReader^ r);
         int write(const uint8_t* ptr, int count);
         int read(uint8_t* buffer, int bytesToRead);
@@ -25,10 +25,5 @@ namespace MavLinkUwp
         {
             return 0;
         }
-    };
-
-    ref class Pixhawk {
-    public:
-        Windows::Foundation::IAsyncOperation<Windows::Foundation::Collections::IIterable<Platform::String^>^>^ findSerialDevices();
     };
 }

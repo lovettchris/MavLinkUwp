@@ -7,87 +7,39 @@ using namespace MavLinkUwp;
 using namespace Platform;
 using namespace Windows::Foundation;
 using namespace Windows::Devices::SerialCommunication;
-using namespace Windows::Devices::Enumeration;
 using namespace Windows::Storage::Streams;
 using namespace Windows::Storage;
 using namespace Windows::Foundation::Collections;
 
-
-static const int pixhawkVendorId = 9900;   ///< Vendor ID for Pixhawk board (V2 and V1) and PX4 Flow
-static const int pixhawkFMUV4ProductId = 18;     ///< Product ID for Pixhawk V2 board
-static const int pixhawkFMUV2ProductId = 17;     ///< Product ID for Pixhawk V2 board
-static const int pixhawkFMUV2OldBootloaderProductId = 22;     ///< Product ID for Bootloader on older Pixhawk V2 boards
-static const int pixhawkFMUV1ProductId = 16;     ///< Product ID for PX4 FMU V1 board
-
-std::string stringf(const char* format, ...)
+bool UwpSerialPort::connect(Platform::String^ deviceId) 
 {
-    va_list args;
-    va_start(args, format);
-
-    int size = _vscprintf(format, args) + 1;
-    std::unique_ptr<char[]> buf(new char[size]);
-
-#ifndef _MSC_VER
-    IGNORE_FORMAT_STRING_ON
-        vsnprintf(buf.get(), size, format, args);
-    IGNORE_FORMAT_STRING_OFF
-#else
-    vsnprintf_s(buf.get(), size, _TRUNCATE, format, args);
-#endif
-
-    va_end(args);
-
-    return std::string(buf.get());
-}
-
-
-Windows::Foundation::IAsyncOperation<IIterable<Platform::String^>^>^ Pixhawk::findSerialDevices()
-{
-    return create_async([=]() -> IIterable<Platform::String^>^
+    auto asyncOp = SerialDevice::FromIdAsync(deviceId);
+    create_task(asyncOp).then([this](Windows::Devices::SerialCommunication::SerialDevice^ device) 
     {
-        Platform::String^ selector = SerialDevice::GetDeviceSelector();
-        auto findOperation = DeviceInformation::FindAllAsync(selector);
-        auto deviceEnumTask = create_task(findOperation);
-        deviceEnumTask.then([=](DeviceInformationCollection^ devices)
+        if (device != nullptr)
         {
-            std::string pattern = stringf("VID_%4X", pixhawkVendorId);
-            int len = devices->Size;
-            for (int i = 0; i < len; ++i)
-            {
-                DeviceInformation^ info = devices->GetAt(i);
-                std::wstring name = info->Name->Data();
-                std::wstring id = info->Id->Data();
-                std::wstring toFind(pattern.begin(), pattern.end());
-                if (name.find(toFind) != std::string::npos || id.find(toFind) != std::string::npos)
-                {
-                    SerialDevice^ _device = SerialDevice::FromIdAsync(info->Id)->GetResults();
-                    if (_device != nullptr)
-                    {
-                        _device->BaudRate = 460800;
-                        _device->Parity = SerialParity::None;
-                        _device->DataBits = 8;
-                        _device->StopBits = SerialStopBitCount::One;
-                        _device->Handshake = SerialHandshake::None;
-                        long long seconds = 10000000; // 100 nanoseconds
-                        TimeSpan duration;
-                        duration.Duration = 5 * seconds;
-                        _device->ReadTimeout = duration;
-                        _device->WriteTimeout = duration;
-                        //_device.IsRequestToSendEnabled = false;
-                        //_device.IsDataTerminalReadyEnabled = false;
+            _device = device;
+            _device->BaudRate = 460800;
+            _device->Parity = SerialParity::None;
+            _device->DataBits = 8;
+            _device->StopBits = SerialStopBitCount::One;
+            _device->Handshake = SerialHandshake::None;
+            long long seconds = 10000000; // 100 nanoseconds
+            TimeSpan duration;
+            duration.Duration = 5 * seconds;
+            _device->ReadTimeout = duration;
+            _device->WriteTimeout = duration;
+            //_device.IsRequestToSendEnabled = false;
+            //_device.IsDataTerminalReadyEnabled = false;
 
-                        auto writer = ref new DataWriter(_device->OutputStream);
-                        auto reader = ref new DataReader(_device->InputStream);
-                        //reader.InputStreamOptions = InputStreamOptions.Partial;
+            auto writer = ref new DataWriter(_device->OutputStream);
+            auto reader = ref new DataReader(_device->InputStream);
+            reader->InputStreamOptions = InputStreamOptions::Partial;
 
-                        connect(writer, reader);
-                        return true;
-                    }
-                }
-            }
+            connect(writer, reader);
         }
-    }
-
+    }).wait();
+    return _device != nullptr;
 }
 
 void UwpSerialPort::connect(DataWriter^ w, DataReader^ r)

@@ -9,9 +9,12 @@
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="UwpSerialPort.cpp" />
+    <ClCompile Include="Pixhawk.cpp" />
+    <ClCompile Include="StringUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="UwpSerialPort.h" />
+    <ClInclude Include="StringUtils.h" />
   </ItemGroup>
 </Project>

@@ -8,6 +8,8 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <TextBlock x:Uid="StatusText" x:Name="StatusText" TextWrapping="Wrap" Text="Connecting..." Margin="20" FontSize="18"/>
+        </ScrollViewer>
     </Grid>
 </Page>
