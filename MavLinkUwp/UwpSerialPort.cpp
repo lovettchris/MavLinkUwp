@@ -14,7 +14,7 @@ using namespace Windows::Foundation::Collections;
 bool UwpSerialPort::connect(Platform::String^ deviceId) 
 {
     auto asyncOp = SerialDevice::FromIdAsync(deviceId);
-    create_task(asyncOp).then([this](Windows::Devices::SerialCommunication::SerialDevice^ device) 
+    auto continuation = create_task(asyncOp).then([this](Windows::Devices::SerialCommunication::SerialDevice^ device) 
     {
         if (device != nullptr)
         {
@@ -38,7 +38,13 @@ bool UwpSerialPort::connect(Platform::String^ deviceId)
 
             connect(writer, reader);
         }
-    }).wait();
+    });
+    try {
+        continuation.wait();
+    }
+    catch (Platform::Exception^ e) {
+        printf("Caught exception!\n");
+    }
     return _device != nullptr;
 }
 
