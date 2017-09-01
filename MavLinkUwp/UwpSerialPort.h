@@ -11,9 +11,6 @@ namespace MavLinkUwp
         Windows::Devices::SerialCommunication::SerialDevice^ _device;
         Windows::Storage::Streams::DataWriter^ _writer;
         Windows::Storage::Streams::DataReader^ _reader;
-
-        mavlink_utils::Semaphore dataReceived;
-
     public:
         bool connect(Platform::String^ deviceId);
         void connect(Windows::Storage::Streams::DataWriter^ w, Windows::Storage::Streams::DataReader^ r);

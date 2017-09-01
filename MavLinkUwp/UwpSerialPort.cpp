@@ -76,12 +76,6 @@ int UwpSerialPort::read(uint8_t* buffer, int bytesToRead)
         auto bytesFromSerial = Platform::ArrayReference<BYTE>(buffer, bytes);
         _reader->ReadBytes(bytesFromSerial);
         bytesToRead = bytes;
-
-        auto bytesToLog = ref new Platform::Array<BYTE>(bytesFromSerial);
-
-        auto writer = ref new DataWriter();
-        writer->WriteBytes(bytesToLog);
-
     }).wait();
 
     return bytesToRead;
