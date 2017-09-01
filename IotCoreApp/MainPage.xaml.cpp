@@ -10,6 +10,7 @@
 #include "collection.h"
 #include "StringUtils.h"
 #include <string>
+#include "MavLinkVehicle.hpp"
 
 using namespace concurrency;
 using namespace IotCoreApp;
