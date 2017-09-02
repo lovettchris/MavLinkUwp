@@ -10,6 +10,10 @@ namespace MavLinkUwp
             return std::wstring(s.begin(), s.end());
         }
     public:
-        std::vector<std::wstring> findSerialDevices();
+        std::wstring Id;
+        std::wstring Name;
+        int baudRate;
+
+        static std::vector<Pixhawk> findSerialDevices();
     };
 }

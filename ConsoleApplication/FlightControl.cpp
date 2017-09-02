@@ -31,13 +31,12 @@ void FlightControl::Run()
 {
 
     try {
-        MavLinkUwp::Pixhawk pixhawk;
-        auto deviceIdList = pixhawk.findSerialDevices();
+        auto deviceIdList = MavLinkUwp::Pixhawk::findSerialDevices();
         for (auto iter = deviceIdList.begin(), end = deviceIdList.end(); iter != end; iter++)
         {
-            std::wstring id = *iter;
+            MavLinkUwp::Pixhawk pixhawk = *iter;
             auto port = std::make_shared<UwpSerialPort>();
-            if (port->connect(ref new Platform::String(id.c_str()))) {
+            if (port->connect(ref new Platform::String(pixhawk.Id.c_str()), pixhawk.baudRate)) {
                 std::shared_ptr<MavLinkConnection> con = MavLinkConnection::connectPort("pixhawk", port);
                 _vehicle = std::make_shared<MavLinkVehicle>(1, 166);
                 _vehicle->connect(con);

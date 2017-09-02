@@ -11,15 +11,15 @@ using namespace Windows::Storage::Streams;
 using namespace Windows::Storage;
 using namespace Windows::Foundation::Collections;
 
-bool UwpSerialPort::connect(Platform::String^ deviceId) 
+bool UwpSerialPort::connect(Platform::String^ deviceId, int baudRate)
 {
     auto asyncOp = SerialDevice::FromIdAsync(deviceId);
-    auto continuation = create_task(asyncOp).then([this](Windows::Devices::SerialCommunication::SerialDevice^ device) 
+    auto continuation = create_task(asyncOp).then([this,baudRate](Windows::Devices::SerialCommunication::SerialDevice^ device) 
     {
         if (device != nullptr)
         {
             _device = device;
-            _device->BaudRate = 460800;
+            _device->BaudRate = baudRate;
             _device->Parity = SerialParity::None;
             _device->DataBits = 8;
             _device->StopBits = SerialStopBitCount::One;

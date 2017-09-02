@@ -12,7 +12,7 @@ namespace MavLinkUwp
         Windows::Storage::Streams::DataWriter^ _writer;
         Windows::Storage::Streams::DataReader^ _reader;
     public:
-        bool connect(Platform::String^ deviceId);
+        bool connect(Platform::String^ deviceId, int baudRate);
         void connect(Windows::Storage::Streams::DataWriter^ w, Windows::Storage::Streams::DataReader^ r);
         int write(const uint8_t* ptr, int count);
         int read(uint8_t* buffer, int bytesToRead);
